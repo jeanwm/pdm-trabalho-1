@@ -22,9 +22,11 @@ public class Servidor {
     }
 
     private static void logConexao(String ip) {
-        try (FileWriter fw = new FileWriter("log.txt", true);
-             BufferedWriter bw = new BufferedWriter(fw);
-             PrintWriter out = new PrintWriter(bw)) {
+        try (
+            FileWriter fw     = new FileWriter("log.txt", true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            PrintWriter out   = new PrintWriter(bw)
+        ) {
             out.println(ip + " conectado em " + LocalDateTime.now().format(formatter));
         } catch (IOException e) {
             e.printStackTrace();
@@ -47,7 +49,6 @@ public class Servidor {
                 entrada = new Scanner(socket.getInputStream());
                 saida = new PrintStream(socket.getOutputStream());
 
-                // Espera o nome do cliente
                 if (entrada.hasNextLine()) {
                     nome = entrada.nextLine();
                     System.out.println("Cliente " + nome + " conectado!");
@@ -70,6 +71,7 @@ public class Servidor {
                         processarMensagem(mensagem);
                     }
                 }
+                
             } catch (IOException e) {
                 System.out.println("Erro com cliente " + nome + ": " + e.getMessage());
             } finally {
@@ -80,18 +82,22 @@ public class Servidor {
         private void processarMensagem(String mensagem) {
             if (mensagem.startsWith("/send message")) {
                 String[] partes = mensagem.split(" ", 4);
+
                 if (partes.length >= 4) {
                     String destinatario = partes[2];
                     String texto = partes[3];
                     enviarMensagem(destinatario, texto);
                 }
+
             } else if (mensagem.startsWith("/send file")) {
                 String[] partes = mensagem.split(" ", 4);
+
                 if (partes.length >= 4) {
                     String destinatario = partes[2];
                     String caminhoArquivo = partes[3];
                     enviarArquivo(destinatario, caminhoArquivo);
                 }
+
             } else if (mensagem.equals("/users")) {
                 listarUsuarios();
             } else if (mensagem.equals("/sair")) {
@@ -101,9 +107,11 @@ public class Servidor {
 
         private void enviarMensagem(String destinatario, String texto) {
             PrintStream ps = clientes.get(destinatario);
+
             if (ps != null) {
                 ps.println("MENSAGEM " + nome + " " + texto);
                 saida.println("Mensagem enviada para " + destinatario);
+
             } else {
                 saida.println("ERRO: Usuário " + destinatario + " não encontrado");
             }
@@ -111,12 +119,14 @@ public class Servidor {
 
         private void enviarArquivo(String destinatario, String caminhoArquivo) {
             File arquivo = new File(caminhoArquivo);
+
             if (!arquivo.exists()) {
                 saida.println("ERRO: Arquivo não encontrado");
                 return;
             }
 
             PrintStream ps = clientes.get(destinatario);
+
             if (ps == null) {
                 saida.println("ERRO: Usuário " + destinatario + " não encontrado");
                 return;
@@ -127,12 +137,15 @@ public class Servidor {
 
                 byte[] buffer = new byte[4096];
                 int lidos;
+
                 while ((lidos = fis.read(buffer)) > 0) {
                     ps.write(buffer, 0, lidos);
                 }
+
                 ps.flush();
 
                 saida.println("Arquivo enviado para " + destinatario);
+
             } catch (IOException e) {
                 saida.println("ERRO: Falha ao enviar arquivo");
                 e.printStackTrace();
@@ -141,6 +154,7 @@ public class Servidor {
 
         private void listarUsuarios() {
             saida.println("Usuários conectados:");
+
             for (String usuario : clientes.keySet()) {
                 saida.println("- " + usuario);
             }
@@ -151,10 +165,12 @@ public class Servidor {
                 clientes.remove(nome);
                 System.out.println(nome + " desconectado!");
             }
+
             try {
                 if (socket != null && !socket.isClosed()) {
                     socket.close();
                 }
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
