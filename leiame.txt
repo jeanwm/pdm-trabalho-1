@@ -1,0 +1,12 @@
+Autores: 
+Caio Fernandes
+Jean Meier
+Lindaura Wanka
+Andre Junior
+
+Para executar o programa (via terminal):
+ 1. Compile ambos os arquivos .java ("javac Clientes.java" e "javac Servidor.Java");
+ 2. Execute o arquivo Servidor.class ("Java Servidor");
+ 3. Em outra guia do terminal, execute o arquivo Cliente.class ("Java Cliente") e siga as instruções para criar um cliente;
+ 4. Repita o passo 3. para quantos clientes forem necessários (pelo menos dois clientes, para efetivar a troca de mensagens e arquivos);
+ 5. No terminal do cliente, siga as instruções indicadas para trocar mensagens e arquivos.
